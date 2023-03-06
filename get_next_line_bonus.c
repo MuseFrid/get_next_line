@@ -6,7 +6,7 @@
 /*   By: gduchesn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 15:02:48 by gduchesn          #+#    #+#             */
-/*   Updated: 2022/11/01 19:25:22 by gduchesn         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:56:54 by gduchesn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,18 @@ char	*set_stash(char *buf, char (*stash)[BUFFER_SIZE + 1], int *ret)
 	return (new);
 }
 
+char	*read_failed_ended(int ret, char *buf, char *str)
+{
+	free(buf);
+	if (ret == -1)
+	{
+		if (str)
+			free(str);
+		return (NULL);
+	}
+	return (str);
+}
+
 char	*get_next(int fd, char (*stash)[BUFFER_SIZE + 1], char *str, int *ret)
 {
 	char		*buf;
@@ -50,10 +62,7 @@ char	*get_next(int fd, char (*stash)[BUFFER_SIZE + 1], char *str, int *ret)
 	}
 	(*ret) = read(fd, buf, BUFFER_SIZE);
 	if (*ret <= 0)
-	{
-		free(buf);
-		return (str);
-	}
+		read_failed_ended(*ret, buf, str);
 	buf[(*ret)] = 0;
 	new = ft_strjoin(str, buf);
 	free(buf);
